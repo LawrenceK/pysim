@@ -1003,7 +1003,7 @@ if __name__ == '__main__':
         card_key_provider_register(CardKeyProviderCsv(csv_default))
 
     # Init card reader driver
-    sl = init_reader(opts, proactive_handler = Proact())
+    sl = init_reader(opts, proactive_handler = Proact(), rst='+rts', debug=True)    # -rts +rts -dtr +dtr
 
     # Create a card handler (for bulk provisioning)
     if opts.card_handler_config:

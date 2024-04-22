@@ -21,6 +21,7 @@ import os
 import argparse
 from typing import Optional
 import serial
+import binascii
 
 from pySim.exceptions import NoCardError, ProtocolError
 from pySim.transport import LinkBase
@@ -123,6 +124,12 @@ class SerialSimLink(LinkBase):
             raise ValueError('Invalid reset pin %s' % self._rst_pin) from exc
 
         rst_meth(rst_val)
+        time.sleep(1.1)  # 100 ms
+        rst_meth(rst_val ^ 1)
+
+#        self._sl.flushInput()
+        rst_meth(rst_val)
+        print(self._rst_pin, " ", rst_val )
         time.sleep(0.1)  # 100 ms
         self._sl.flushInput()
         rst_meth(rst_val ^ 1)
@@ -149,18 +156,23 @@ class SerialSimLink(LinkBase):
                 self._atr.append(ord(b))
                 self._dbg_print("T%si = %x" % (chr(ord('A')+i), ord(b)))
 
+        print("atr1.1", ",".join( hex(b) for b in self._atr) )
+
         for i in range(0, t0 & 0xf):
             b = self._rx_byte()
             self._atr.append(ord(b))
             self._dbg_print("Historical = %x" % ord(b))
+        print("atr2.1", ",".join( hex(b) for b in self._atr) )
 
         while True:
             x = self._rx_byte()
             if not x:
                 break
+            print("atr3", " ", x, binascii.hexlify(x)  )
             self._atr.append(ord(x))
             self._dbg_print("Extra: %x" % ord(x))
 
+        print("atr3.1", ",".join( hex(b) for b in self._atr) )
         return 1
 
     def _dbg_print(self, s):
