@@ -408,7 +408,9 @@ class TpduFilter(ApduHandler):
 
     def input_tpdu(self, tpdu:Tpdu):
         # handle SW=61xx / 6Cxx
-        if tpdu.sw[0] == 0x61 or tpdu.sw[0] == 0x6C:
+        if not tpdu.sw:
+            return None
+        if (tpdu.sw[0] == 0x61 or tpdu.sw[0] == 0x6C):
             self.state = 'WAIT_GET_RESPONSE'
             # handle successive 61/6c responses by stupid phone/modem OS
             if tpdu.ins != 0xC0:
