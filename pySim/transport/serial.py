@@ -129,7 +129,7 @@ class SerialSimLink(LinkBase):
 
 #        self._sl.flushInput()
         rst_meth(rst_val)
-        print(self._rst_pin, " ", rst_val )
+#        print(self._rst_pin, " ", rst_val )
         time.sleep(0.1)  # 100 ms
         self._sl.flushInput()
         rst_meth(rst_val ^ 1)
@@ -156,23 +156,22 @@ class SerialSimLink(LinkBase):
                 self._atr.append(ord(b))
                 self._dbg_print("T%si = %x" % (chr(ord('A')+i), ord(b)))
 
-        print("atr1.1", ",".join( hex(b) for b in self._atr) )
+#        print("atr1.1", ",".join( hex(b) for b in self._atr) )
 
         for i in range(0, t0 & 0xf):
             b = self._rx_byte()
             self._atr.append(ord(b))
             self._dbg_print("Historical = %x" % ord(b))
-        print("atr2.1", ",".join( hex(b) for b in self._atr) )
+#        print("atr2.1", ",".join( hex(b) for b in self._atr) )
 
         while True:
             x = self._rx_byte()
             if not x:
                 break
-            print("atr3", " ", x, binascii.hexlify(x)  )
             self._atr.append(ord(x))
             self._dbg_print("Extra: %x" % ord(x))
 
-        print("atr3.1", ",".join( hex(b) for b in self._atr) )
+#        print("atr3.1", ",".join( hex(b) for b in self._atr) )
         return 1
 
     def _dbg_print(self, s):
@@ -181,6 +180,7 @@ class SerialSimLink(LinkBase):
 
     def _tx_byte(self, b):
         self._sl.write(b)
+        return
         r = self._sl.read()
         if r != b:  # TX and RX are tied, so we must clear the echo
             raise ProtocolError("Bad echo value. Expected %02x, got %s)" % (
@@ -190,6 +190,7 @@ class SerialSimLink(LinkBase):
         """This is only safe if it's guaranteed the card won't send any data
         during the time of tx of the string !!!"""
         self._sl.write(s)
+        return
         r = self._sl.read(len(s))
         if r != s:  # TX and RX are tied, so we must clear the echo
             raise ProtocolError(

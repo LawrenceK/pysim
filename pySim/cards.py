@@ -110,6 +110,8 @@ class UiccCardBase(SimCardBase):
                         and rec[0][8:8 + int(rec[0][6:8], 16) * 2] not in self._aids:
                     self._aids.append(rec[0][8:8 + int(rec[0][6:8], 16) * 2])
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             print("Can't read AIDs from SIM -- %s" % (str(e),))
             self._aids = []
         return self._aids
